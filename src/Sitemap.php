@@ -16,14 +16,19 @@ use DomDocument;
 class Sitemap {
 
 	/**
-	 * Maximum number of URLs allowed to be contained.
+	 * Maximum number of pages allowed to be contained.
 	 */
-	const MAX_URLS = 50000;
+	const MAX_PAGES = 50000;
 
 	/**
 	 * Maximum size in bytes allowed.
 	 */
 	const MAX_SIZE = 10485760;
+
+	/**
+	 * Maximum number of images per page.
+	 */
+	const MAX_IMAGES_PER_PAGE = 1000;
 
 	/**
 	 * Enable/disable debug mode.
@@ -47,16 +52,52 @@ class Sitemap {
 	protected $_base;
 
 	/**
+	 * Namespace definitions used when generating XML sitemaps.
+	 *
+	 * @var array
+	 */
+	protected static $_namespaces = array(
+		'core' => array(
+			'prefix' => null,
+			'version' => '0.9',
+			'uri' => 'http://www.sitemaps.org/schemas/sitemap/{:version}',
+			'schema' => 'http://www.sitemaps.org/schemas/sitemap/{:version}/sitemap.xsd'
+		),
+		'index' => array(
+			'prefix' => null,
+			'version' => '0.9',
+			'uri' => 'http://www.sitemaps.org/schemas/sitemap/{:version}',
+			'schema' => 'http://www.sitemaps.org/schemas/sitemap/{:version}/site{:name}.xsd'
+		),
+		'image' => array(
+			'prefix' => 'image',
+			'version' => '1.1',
+			'uri' => 'http://www.google.com/schemas/sitemap-{:prefix}/{:version}',
+			'schema' => 'http://www.google.com/schemas/sitemap-{:prefix}/{:version}/sitemap-{:prefix}.xsd'
+		)
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $base The base to fully qualify URLs.
 	 */
-	public function __contruct($base) {
+	public function __construct($base) {
 		$this->_base = $base;
+
+		foreach (static::$_namespaces as $name => &$namespace) {
+			foreach (array('uri', 'schema') as $field) {
+				$namespace[$field] = strtr($namespace[$field], array(
+					'{:name}' => $name,
+					'{:version}' => $namespace['version'],
+					'{:prefix}' => $namespace['prefix']
+				));
+			}
+		}
 	}
 
 	/**
-	 * Adds an item to the sitemap.
+	 * Adds a page to the sitemap.
 	 *
 	 * @param string $url An absolute URL for the item to be added.
 	 * @param array $options Additional options for the item:
@@ -71,17 +112,50 @@ class Sitemap {
 	 *                       - title
 	 *                         For XML used as a comment.
 	 */
-	public function add($url, $options = array()) {
+	public function page($url, $options = array()) {
 		$defaults = array(
 			'modified' => null,
 			'changes' => null,
 			'priority' => null,
-			'title' => null
+			'title' => null,
+			'images' => array()
 		);
 		if (strpos($url, '://') === false) {
 			$url = $this->_base . $url;
 		}
-		$this->_data[] = compact('url') + $options + $defaults;
+		$this->_data[$url] = compact('url') + $options + $defaults;
+	}
+
+	/**
+	 * Adds an image to the sitemap.
+	 *
+	 * @link http://www.google.com/support/webmasters/bin/answer.py?answer=178636
+	 * @param string $url An absolute URL for the image.
+	 * @param string $page An absolute URL for the page which contains the image.
+	 * $param array $options Available options are:
+	 *                       - title
+	 *                         The title of the image.
+	 *                       - license
+	 *                         A fully qualified URL to the license of the image.
+	 *                       - caption
+	 *                         The caption of the image.
+	 *                       - location
+	 *                         The geographic location of the image (i.e. Limerick, Ireland).
+	 */
+	public function image($url, $page, array $options = array()) {
+		if (strpos($url, '://') === false) {
+			$url = $this->_base . $url;
+		}
+		if (strpos($page, '://') === false) {
+			$page = $this->_base . $page;
+		}
+		$defaults = array(
+			'title' => null,
+			'license' => null,
+			'caption' => null,
+			'location' => null
+		);
+		$this->_data[$page]['images'][$url] = compact('url') + $options + $defaults;
 	}
 
 	/**
@@ -94,8 +168,8 @@ class Sitemap {
 		if (!method_exists($this, '_generate' . ucfirst($format))) {
 			throw new Exception('Invalid format given.');
 		}
-		if (count($this->_data) > static::MAX_URLS) {
-			throw new Exception('Too many URLs.');
+		if (count($this->_data) > static::MAX_PAGES) {
+			throw new Exception('Too many pages/URLs.');
 		}
 
 		$result = $this->{'_generate' . ucfirst($format)}();
@@ -108,13 +182,22 @@ class Sitemap {
 
 	protected function _generateXml() {
 		$Document = new DomDocument('1.0', 'UTF-8');
-		$Set = $Document->createElementNs(
-			'http://www.sitemaps.org/schemas/sitemap/0.9', 'urlset'
-		);
+
+		$namespaces = static::$_namespaces;
+		$extensions = $this->_uses($this->_data);
+
+		$Set = $Document->createElementNs($namespaces['core']['uri'], 'urlset');
+		$schemaLocation = "{$namespaces['core']['uri']} {$namespaces['core']['schema']}";
+
+		foreach ($extensions as $ext) {
+			$Set->setAttribute("xmlns:{$namespaces[$ext]['prefix']}", $namespaces[$ext]['uri']);
+			$schemaLocation .= " {$namespaces[$ext]['uri']} {$namespaces[$ext]['schema']}";
+		}
+
 		$Set->setAttributeNs(
 			'http://www.w3.org/2001/XMLSchema-instance',
 			'xsi:schemaLocation',
-			'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd'
+			$schemaLocation
 		);
 
 		foreach ($this->_data as $item) {
@@ -133,6 +216,32 @@ class Sitemap {
 			}
 			if ($item['priority']) {
 				$Page->appendChild($Document->createElement('priority', $item['priority']));
+			}
+			if ($item['images']) {
+				if (count($item['images']) > static::MAX_IMAGES_PER_PAGE) {
+					throw new Exception('Too many images for page');
+				}
+
+				foreach ($item['images'] as $image) {
+					$Image = $Document->createElement('image:image');
+
+					$Image->appendChild($Document->createElement('image:loc', $image['url']));
+
+					if ($image['caption']) {
+						$Image->appendChild($Document->createElement('image:caption', $image['caption']));
+					}
+					if ($image['location']) {
+						$Image->appendChild($Document->createElement('image:geo_location', $image['location']));
+					}
+					if ($image['title']) {
+						$Image->appendChild($Document->createElement('image:title', $image['title']));
+					}
+					if ($image['license']) {
+						$Image->appendChild($Document->createElement('image:license', $image['license']));
+					}
+
+					$Page->appendChild($Image);
+				}
 			}
 			$Set->appendChild($Page);
 		}
@@ -154,13 +263,15 @@ class Sitemap {
 
 	protected function _generateIndexXml() {
 		$Document = new DomDocument('1.0', 'UTF-8');
+		$namespaces = static::$_namespaces;
+
 		$Set = $Document->createElementNs(
-			'http://www.sitemaps.org/schemas/sitemap/0.9', 'sitemapindex'
+			$namespaces['index']['uri'], 'sitemapindex'
 		);
 		$Set->setAttributeNs(
 			'http://www.w3.org/2001/XMLSchema-instance',
 			'xsi:schemaLocation',
-			'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd'
+			"{$namespaces['index']['uri']} {$namespaces['index']['schema']}"
 		);
 
 		foreach ($this->_data as $item) {
@@ -180,6 +291,26 @@ class Sitemap {
 
 		$Document->formatOutput = $this->debug;
 		return $Document->saveXml();
+	}
+
+	protected function _uses($data) {
+		$names = $extensions = array();
+
+		foreach (static::$_namespaces as $name => $namespace) {
+			if (!$namespace['prefix']) { // Not an extension.
+				continue;
+			}
+			$names[$name] = $name . 's'; // Poor mans pluralize.
+		}
+		foreach ($data as $item) {
+			foreach ($names as $name => $pluralName) {
+				if (!empty($item[$name]) || !empty($item[$pluralName])) {
+					$extensions[] = $name;
+					unset($names[$name]);
+				}
+			}
+		}
+		return $extensions;
 	}
 }
 

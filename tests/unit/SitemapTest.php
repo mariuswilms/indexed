@@ -21,6 +21,7 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp() {
 		$this->subject = new Sitemap('http://example.org');
+		$this->subject->debug = true;
 		$this->_online = (boolean) @fsockopen('google.com', 80);
 	}
 
@@ -29,10 +30,10 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 			$this->markTestSkipped('Not connected to the internet.');
 		}
 
-		$this->subject->add('/site-a/map.xml', array(
+		$this->subject->page('/site-a/map.xml', array(
 			'title' => 'a map'
 		));
-		$this->subject->add('/site-b/map.xml', array(
+		$this->subject->page('/site-b/map.xml', array(
 			'title' => 'b map'
 		));
 
@@ -48,10 +49,10 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 			$this->markTestSkipped('Not connected to the internet.');
 		}
 
-		$this->subject->add('/posts-abcdef', array(
+		$this->subject->page('/posts-abcdef', array(
 			'title' => 'post index'
 		));
-		$this->subject->add('/posts-abcdef/add', array(
+		$this->subject->page('/posts-abcdef/page', array(
 			'title' => 'post add',
 			'modified' => 'monthly',
 			'priority' => 0.4,
@@ -65,10 +66,10 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testSitemapTxt() {
-		$this->subject->add('/posts-abcdef', array(
+		$this->subject->page('/posts-abcdef', array(
 			'title' => 'post index'
 		));
-		$this->subject->add('/posts-abcdef/add', array(
+		$this->subject->page('/posts-abcdef/add', array(
 			'title' => 'post add',
 			'modified' => 'monthly',
 			'priority' => 0.4,
@@ -77,11 +78,38 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 
 		$result = $this->subject->generate('txt');
 		$expected = <<<TXT
-/posts-abcdef
-/posts-abcdef/add
+http://example.org/posts-abcdef
+http://example.org/posts-abcdef/add
 
 TXT;
 		$this->assertEquals($expected, $result);
+	}
+
+	public function testAddingImagesToPage() {
+		if (!$this->_online) {
+			$this->markTestSkipped('Not connected to the internet.');
+		}
+
+		$this->subject->page('/posts-abcdef', array(
+			'title' => 'post index'
+		));
+		$this->subject->image('/img/kat.png', '/posts-abcdef', array(
+			'title' => 'The title'
+		));
+		$Document = new DomDocument();
+		$output = $this->subject->generate('xml');
+		$Document->loadXml($output);
+
+		$schema = <<<XML
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://www.sitemaps.org/schemas/sitemap/0.9"
+             schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"/>
+  <xs:import namespace="http://www.google.com/schemas/sitemap-image/1.1"
+             schemaLocation="http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd"/>
+</xs:schema>
+XML;
+		$result = $Document->schemaValidateSource($schema);
+		$this->assertTrue($result);
 	}
 }
 

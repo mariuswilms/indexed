@@ -17,13 +17,19 @@ use indexed\Sitemap;
 // All URLs a relative to the base given here.
 $sitemap = new Sitemap('http://example.org');
 
-$sitemap->add('/', array(
+$sitemap->page('/', array(
     'changes' => 'daily',
     'priority' => '1.0'
 ));
 
 // Just the URL parameter is actually required.
-$sitemap->add('/posts');
+$sitemap->page('/post/know-the-cat');
+
+// Images are also supported and can be added to existing pages.
+$sitemap->image('/img/kittykat.png', '/post/know-the-cat', array(
+    'title' => 'My favorite Cat',
+    'location' => 'Hamburg, Germany'
+));
 
 $xml = $sitemap->generate('xml');
 
