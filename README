@@ -6,6 +6,16 @@ Synopsis
 --------
 -
 
+Features
+--------
+- Sitemap XML with full schema definitions
+- Generate sitemaps and siteindexes
+- Support for images in sitemaps
+- Enforces sitemap size constraints
+- All directives from Robots Exclusion Standard 1.0
+- All directives from Robots Exclusion Standard Standard 2.0
+- Additional support for unofficial 'Sitemap' and 'Crawl-Delay' extensions
+
 Usage
 -----
 Generating content suited for a XML sitemap:
