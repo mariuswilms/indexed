@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+indexed
+
+Copyright (c) 2013 David Persson. All rights reserved.
+
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<phpunit 
+	backupGlobals="false"
+	backupStaticAttributes="false"
+	bootstrap="bootstrap.php"
+>
+	<testsuites>
+		<testsuite name="Library">
+			<directory suffix="Test.php">tests/unit</directory>
+			<directory suffix="Test.php">tests/integration</directory>
+			<directory suffix="Test.php">tests/functional</directory> 
+		</testsuite>
+	</testsuites>
+</phpunit>
