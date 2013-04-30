@@ -38,7 +38,7 @@ class Sitemap {
 	public $debug = false;
 
 	/**
-	 * Holds items of the sitemap added via the `Sitemap::add()`.
+	 * Holds page items of the sitemap added via the `Sitemap::page()`.
 	 *
 	 * @var array
 	 */
