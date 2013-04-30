@@ -13,7 +13,7 @@ Features
 - Support for images in sitemaps
 - Enforces sitemap size constraints
 - All directives from Robots Exclusion Standard 1.0
-- All directives from Robots Exclusion Standard Standard 2.0
+- All directives from Robots Exclusion Standard 2.0
 - Additional support for unofficial 'Sitemap' and 'Crawl-Delay' extensions
 
 Usage
