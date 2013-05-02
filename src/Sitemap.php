@@ -161,6 +161,9 @@ class Sitemap {
 		if (isset($this->_data[$page]['images'][$url])) {
 			throw new Exception("Will not overwrite image with URL `{$url}`; already added.");
 		}
+		if (!isset($this->_data[$page])) {
+			throw new Exception("No page with URL `{$url}` found to add image to.");
+		}
 		$this->_data[$page]['images'][$url] = compact('url') + $options + $defaults;
 	}
 
