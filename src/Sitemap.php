@@ -123,7 +123,7 @@ class Sitemap {
 		if (strpos($url, '://') === false) {
 			$url = $this->_base . $url;
 		}
-		if (isset($this->data[$url])) {
+		if (isset($this->_data[$url])) {
 			throw new Exception("Will not overwrite page with URL `{$url}`; already added.");
 		}
 		$this->_data[$url] = compact('url') + $options + $defaults;
@@ -158,7 +158,7 @@ class Sitemap {
 			'caption' => null,
 			'location' => null
 		);
-		if (isset($this->data[$page]['images'][$url])) {
+		if (isset($this->_data[$page]['images'][$url])) {
 			throw new Exception("Will not overwrite image with URL `{$url}`; already added.");
 		}
 		$this->_data[$page]['images'][$url] = compact('url') + $options + $defaults;
