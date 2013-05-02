@@ -111,6 +111,34 @@ XML;
 		$result = $Document->schemaValidateSource($schema);
 		$this->assertTrue($result);
 	}
+
+	public function testXmlUrlTreatment() {
+		$this->subject->page('/post/a?l=en');
+		$this->subject->page('/post/b?l=en&filter=xyz');
+		$this->subject->page('/post/c?l=en&amp;filter=xyz');
+		$this->subject->image('/image.png?l=en&v=123', '/post/a?l=en');
+
+		$result = $this->subject->generate('xml');
+		$expected = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
+  <url>
+    <loc>http://example.org/post/a?l=en</loc>
+    <image:image>
+      <image:loc><![CDATA[http://example.org/image.png?l=en&v=123]]></image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc><![CDATA[http://example.org/post/b?l=en&filter=xyz]]></loc>
+  </url>
+  <url>
+    <loc>http://example.org/post/c?l=en&amp;filter=xyz</loc>
+  </url>
+</urlset>
+
+XML;
+		$this->assertEquals($expected, $result);
+	}
 }
 
 ?>

@@ -215,7 +215,14 @@ class Sitemap {
 			if ($item['title']) {
 				$Page->appendChild($Document->createComment($item['title']));
 			}
-			$Page->appendChild($Document->createElement('loc', $item['url']));
+
+			if (!$this->_needsEscape($item['url'])) {
+				$Element = $Document->createElement('loc', $item['url']);
+			} else {
+				$Element = $Document->createElement('loc');
+				$Element->appendChild($Document->createCDATASection($item['url']));
+			}
+			$Page->appendChild($Element);
 
 			if ($item['modified']) {
 				$Page->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
@@ -234,7 +241,13 @@ class Sitemap {
 				foreach ($item['images'] as $image) {
 					$Image = $Document->createElement('image:image');
 
-					$Image->appendChild($Document->createElement('image:loc', $image['url']));
+					if (!$this->_needsEscape($image['url'])) {
+						$Element = $Document->createElement('image:loc', $image['url']);
+					} else {
+						$Element = $Document->createElement('image:loc');
+						$Element->appendChild($Document->createCDATASection($image['url']));
+					}
+					$Image->appendChild($Element);
 
 					if ($image['caption']) {
 						$Image->appendChild($Document->createElement('image:caption', $image['caption']));
@@ -289,7 +302,14 @@ class Sitemap {
 			if ($item['title']) {
 				$Map->appendChild($Document->createComment($item['title']));
 			}
-			$Map->appendChild($Document->createElement('loc', $item['url']));
+
+			if (!$this->_needsEscape($item['url'])) {
+				$Element = $Document->createElement('loc', $item['url']);
+			} else {
+				$Element = $Document->createElement('loc');
+				$Element->appendChild($Document->createCDATASection($item['url']));
+			}
+			$Map->appendChild($Element);
 
 			if ($item['modified']) {
 				$Map->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
@@ -320,6 +340,17 @@ class Sitemap {
 			}
 		}
 		return $extensions;
+	}
+
+	/**
+	 * Helper function to check if a string (in this case an URL) needs to be
+	 * wrapped in a CDATA section.
+	 *
+	 * @param string $string
+	 * @return boolean
+	 */
+	protected function _needsEscape($string) {
+		return strpos($string, '&') !== false && strpos($string, '&amp;') === false;
 	}
 }
 
