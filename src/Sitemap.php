@@ -175,7 +175,7 @@ class Sitemap {
 			throw new Exception('Invalid format given.');
 		}
 		if (count($this->_data) > static::MAX_PAGES) {
-			throw new Exception('Too many pages/URLs.');
+			throw new Exception('Too many pages.');
 		}
 
 		$result = $this->{'_generate' . ucfirst($format)}();
