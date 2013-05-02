@@ -283,6 +283,7 @@ class Sitemap {
 		return $result;
 	}
 
+	// @link http://support.google.com/webmasters/bin/answer.py?hl=en&answer=75712
 	protected function _generateIndexXml() {
 		$Document = new DomDocument('1.0', 'UTF-8');
 		$namespaces = static::$_namespaces;
