@@ -74,7 +74,24 @@ abstract class Site {
 	 *
 	 * @return string XML
 	 */
-	abstract public function generate();
+	public function generate() {
+		if (count($this->_data) > static::MAX_ITEMS) {
+			throw new Exception('Too many items.');
+		}
+		$result = $this->_generate();
+
+		if (strlen($result) > static::MAX_SIZE) {
+			throw new Exception('Result document exceeds allowed size.');
+		}
+		return $result;
+	}
+
+	/**
+	 * Generates i.e. the sitemap.
+	 *
+	 * @return string XML
+	 */
+	abstract protected function _generate();
 
 	protected function _uses($data) {
 		$names = $extensions = array();

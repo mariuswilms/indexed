@@ -53,18 +53,6 @@ class Siteindex extends Site {
 		$this->_data[] = compact('url') + $options + $defaults;
 	}
 
-	public function generate() {
-		if (count($this->_data) > static::MAX_ITEMS) {
-			throw new Exception('Too many items.');
-		}
-		$result = $this->_generate();
-
-		if (strlen($result) > static::MAX_SIZE) {
-			throw new Exception('Result document exceeds allowed size.');
-		}
-		return $result;
-	}
-
 	protected function _generate() {
 		$document = new DomDocument('1.0', 'UTF-8');
 		$namespaces = static::$_namespaces;
