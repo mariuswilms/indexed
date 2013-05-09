@@ -19,7 +19,7 @@ Features
 
 Usage
 -----
-Generating content suited for a XML sitemap:
+Creating XML for sitemap with images:
 <?php
 
 use indexed\Sitemap;
@@ -41,9 +41,22 @@ $sitemap->image('/img/kittykat.png', '/post/know-the-cat', array(
     'location' => 'Hamburg, Germany'
 ));
 
-$xml = $sitemap->generate('xml');
+$xml = $sitemap->generate();
 
-// Now you can echo or save the contents of $xml.
+?>
+
+Creating a siteindex:
+<?php
+
+use indexed\Siteindex;
+
+$siteindex = new Siteindex('http://example.org');
+
+$siteindex->sitemap('/sitemap-0.xml');
+$siteindex->sitemap('/sitemap-1.xml');
+$siteindex->sitemap('/sitemap-2.xml');
+
+$xml = $siteindex->generate();
 
 ?>
 
@@ -63,8 +76,6 @@ $robotsTxt->sitemap('http://example.org/sitemap.xml');
 $robotsTxt->disallow('/', 'AdsBot-Google');
 
 $txt = $robotsTxt->generate();
-
-// Now you can echo or save the contents of $txt.
 
 ?>
 
