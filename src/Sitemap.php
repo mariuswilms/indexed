@@ -170,7 +170,7 @@ class Sitemap {
 	/**
 	 * Generates the sitemap in given format.
 	 *
-	 * @param string $format Either 'xml', 'indeXml' or 'txt'.
+	 * @param string $format Either 'xml', 'indeXml' or 'txt' (deprecated).
 	 * @return string The sitemap in given format.
 	 */
 	public function generate($format = 'xml') {
@@ -260,16 +260,6 @@ class Sitemap {
 		return $Document->saveXml();
 	}
 
-	// @link http://www.sitemaps.org/protocol.php#otherformats
-	protected function _generateTxt() {
-		$result = null;
-
-		foreach ($this->_data as $item) {
-			$result .= $item['url'] . "\n";
-		}
-		return $result;
-	}
-
 	// @link http://support.google.com/webmasters/bin/answer.py?hl=en&answer=75712
 	protected function _generateIndexXml() {
 		$Document = new DomDocument('1.0', 'UTF-8');
@@ -352,6 +342,21 @@ class Sitemap {
 	 */
 	protected function _needsEscape($string) {
 		return strpos($string, '&') !== false && strpos($string, '&amp;') === false;
+	}
+
+	// @link http://www.sitemaps.org/protocol.php#otherformats
+	// @deprecated
+	protected function _generateTxt() {
+		if ($format == 'txt') {
+			$message = 'Format `txt` has been deprecated and will be removed soon.';
+			trigger_error($message, E_USER_DEPRECATED);
+		}
+		$result = null;
+
+		foreach ($this->_data as $item) {
+			$result .= $item['url'] . "\n";
+		}
+		return $result;
 	}
 }
 
