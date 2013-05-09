@@ -63,19 +63,19 @@ $xml = $siteindex->generate();
 Control all the lovely robots:
 <?php
 
-use indexed\RobotsTxt;
+use indexed\Robots;
 
-$robotsTxt = new RobotsTxt();
+$robots = new Robots();
 
 // The following directives apply to all agents.
-$robotsTxt->disallow('/admin');
-$robotsTxt->requestRate(20);
-$robotsTxt->sitemap('http://example.org/sitemap.xml');
+$robots->disallow('/admin');
+$robots->requestRate(20);
+$robots->sitemap('http://example.org/sitemap.xml');
 
 // Disallow crawling of the entire site just for Google's AdsBot.
-$robotsTxt->disallow('/', 'AdsBot-Google');
+$robots->disallow('/', 'AdsBot-Google');
 
-$txt = $robotsTxt->generate();
+$txt = $robots->generate();
 
 ?>
 

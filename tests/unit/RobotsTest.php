@@ -10,16 +10,16 @@
 
 namespace indexed\tests\unit;
 
-use indexed\RobotsTxt;
+use indexed\Robots;
 
-class RobotsTxtTest extends \PHPUnit_Framework_TestCase {
+class RobotsTest extends \PHPUnit_Framework_TestCase {
 
 	public $subject;
 
 	protected $_online;
 
 	public function setUp() {
-		$this->subject = new RobotsTxt();
+		$this->subject = new Robots();
 		$this->_online = (boolean) @fsockopen('google.com', 80);
 	}
 

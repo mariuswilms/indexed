@@ -13,12 +13,12 @@ namespace indexed;
 use Exception;
 
 /**
- * The RobotsTxt class allows to generate output according
+ * The Robots class allows to generate output according
  * to Robots Exclusion Standard.
  *
  * @link http://www.robotstxt.org/orig.html
  */
-class RobotsTxt {
+class Robots {
 
 	protected static $_directivesOrder = array(
 		'User-agent',    // 1.0
