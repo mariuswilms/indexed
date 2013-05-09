@@ -13,6 +13,12 @@ namespace indexed;
 use Exception;
 use DomDocument;
 
+/**
+ * Class for generating siteindex XML. Siteindexes are
+ * basically sitemaps for sitemaps!
+ *
+ * @link http://support.google.com/webmasters/bin/answer.py?hl=en&answer=71453
+ */
 class Siteindex extends Site {
 
 	protected static $_namespaces = array(
@@ -59,7 +65,6 @@ class Siteindex extends Site {
 		return $result;
 	}
 
-	// @link http://support.google.com/webmasters/bin/answer.py?hl=en&answer=75712
 	protected function _generate() {
 		$document = new DomDocument('1.0', 'UTF-8');
 		$namespaces = static::$_namespaces;
