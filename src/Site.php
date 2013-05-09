@@ -51,7 +51,7 @@ abstract class Site {
 	protected static $_namespaces = array();
 
 	/**
-	 * Constructor.
+	 * Constructor. Parses and loads the namespaces, sets base URL.
 	 *
 	 * @param string $base The base to fully qualify URLs.
 	 */
@@ -70,7 +70,7 @@ abstract class Site {
 	}
 
 	/**
-	 * Generates the sitemap in given format.
+	 * Generates and validates i.e. the sitemap.
 	 *
 	 * @return string XML
 	 */
