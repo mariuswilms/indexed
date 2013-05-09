@@ -142,74 +142,74 @@ class Sitemap extends Site {
 	}
 
 	protected function _generate() {
-		$Document = new DomDocument('1.0', 'UTF-8');
+		$document = new DomDocument('1.0', 'UTF-8');
 
 		$namespaces = static::$_namespaces;
 		$extensions = $this->_uses($this->_data);
 
-		$Set = $Document->createElementNs($namespaces['core']['uri'], 'urlset');
+		$set = $document->createElementNs($namespaces['core']['uri'], 'urlset');
 		$schemaLocation = "{$namespaces['core']['uri']} {$namespaces['core']['schema']}";
 
 		foreach ($extensions as $ext) {
-			$Set->setAttribute("xmlns:{$namespaces[$ext]['prefix']}", $namespaces[$ext]['uri']);
+			$set->setAttribute("xmlns:{$namespaces[$ext]['prefix']}", $namespaces[$ext]['uri']);
 			$schemaLocation .= " {$namespaces[$ext]['uri']} {$namespaces[$ext]['schema']}";
 		}
 
-		$Set->setAttributeNs(
+		$set->setAttributeNs(
 			'http://www.w3.org/2001/XMLSchema-instance',
 			'xsi:schemaLocation',
 			$schemaLocation
 		);
 
 		foreach ($this->_data as $item) {
-			$Page = $Document->createElement('url');
+			$page = $document->createElement('url');
 
 			if ($item['title']) {
-				$Page->appendChild($Document->createComment($item['title']));
+				$page->appendChild($document->createComment($item['title']));
 			}
-			$Page->appendChild($this->_safeLocElement($item['url'], $Document));
+			$page->appendChild($this->_safeLocElement($item['url'], $document));
 
 			if ($item['modified']) {
-				$Page->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
+				$page->appendChild($document->createElement('lastmod', date('c', strtotime($item['modified']))));
 			}
 			if ($item['changes']) {
-				$Page->appendChild($Document->createElement('changefreq', $item['changes']));
+				$page->appendChild($document->createElement('changefreq', $item['changes']));
 			}
 			if ($item['priority']) {
-				$Page->appendChild($Document->createElement('priority', $item['priority']));
+				$page->appendChild($document->createElement('priority', $item['priority']));
 			}
 			if ($item['images']) {
 				if (count($item['images']) > static::MAX_IMAGES_PER_PAGE) {
 					throw new Exception('Too many images for page');
 				}
 
-				foreach ($item['images'] as $image) {
-					$Image = $Document->createElement('image:image');
+				foreach ($item['images'] as $imageItem) {
+					$image = $document->createElement('image:image');
 
-					$Image->appendChild($this->_safeLocElement($image['url'], $Document, 'image'));
+					$image->appendChild($this->_safeLocElement($imageItem['url'], $document, 'image'));
 
-					if ($image['caption']) {
-						$Image->appendChild($Document->createElement('image:caption', $image['caption']));
+					if ($imageItem['caption']) {
+						$image->appendChild($document->createElement('image:caption', $imageItem['caption']));
 					}
-					if ($image['location']) {
-						$Image->appendChild($Document->createElement('image:geo_location', $image['location']));
+					if ($imageItem['location']) {
+						$image->appendChild($document->createElement('image:geo_location', $imageItem['location']));
 					}
-					if ($image['title']) {
-						$Image->appendChild($Document->createElement('image:title', $image['title']));
+					if ($imageItem['title']) {
+						$image->appendChild($document->createElement('image:title', $imageItem['title']));
 					}
-					if ($image['license']) {
-						$Image->appendChild($Document->createElement('image:license', $image['license']));
+					if ($imageItem['license']) {
+						$image->appendChild($document->createElement('image:license', $imageItem['license']));
 					}
 
-					$Page->appendChild($Image);
+					$page->appendChild($image);
 				}
 			}
-			$Set->appendChild($Page);
+			$set->appendChild($page);
 		}
-		$Document->appendChild($Set);
+		$document->appendChild($set);
 
-		$Document->formatOutput = $this->debug;
-		return $Document->saveXml();
+		$document->formatOutput = $this->debug;
+		return $document->saveXml();
 	}
 
 	// @link http://www.sitemaps.org/protocol.php#otherformats

@@ -61,35 +61,35 @@ class Siteindex extends Site {
 
 	// @link http://support.google.com/webmasters/bin/answer.py?hl=en&answer=75712
 	protected function _generate() {
-		$Document = new DomDocument('1.0', 'UTF-8');
+		$document = new DomDocument('1.0', 'UTF-8');
 		$namespaces = static::$_namespaces;
 
-		$Set = $Document->createElementNs(
+		$set = $document->createElementNs(
 			$namespaces['index']['uri'], 'sitemapindex'
 		);
-		$Set->setAttributeNs(
+		$set->setAttributeNs(
 			'http://www.w3.org/2001/XMLSchema-instance',
 			'xsi:schemaLocation',
 			"{$namespaces['index']['uri']} {$namespaces['index']['schema']}"
 		);
 
 		foreach ($this->_data as $item) {
-			$Map = $Document->createElement('sitemap');
+			$map = $document->createElement('sitemap');
 
 			if ($item['title']) {
-				$Map->appendChild($Document->createComment($item['title']));
+				$map->appendChild($document->createComment($item['title']));
 			}
-			$Map->appendChild($this->_safeLocElement($item['url'], $Document));
+			$map->appendChild($this->_safeLocElement($item['url'], $document));
 
 			if ($item['modified']) {
-				$Map->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
+				$map->appendChild($document->createElement('lastmod', date('c', strtotime($item['modified']))));
 			}
-			$Set->appendChild($Map);
+			$set->appendChild($map);
 		}
-		$Document->appendChild($Set);
+		$document->appendChild($set);
 
-		$Document->formatOutput = $this->debug;
-		return $Document->saveXml();
+		$document->formatOutput = $this->debug;
+		return $document->saveXml();
 	}
 }
 

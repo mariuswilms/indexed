@@ -100,20 +100,20 @@ abstract class Site {
 	 * Returns a `loc` element with the URL wrapped - if needed - in a CDATA section.
 	 *
 	 * @param string $url
-	 * @param object $Document
+	 * @param object $document
 	 * @param string $namespace Optional namespace.
 	 * @return object
 	 */
-	protected function _safeLocElement($url, $Document, $namespace = null) {
+	protected function _safeLocElement($url, $document, $namespace = null) {
 		$name = $namespace ? "{$namespace}:loc" : 'loc';
 
 		if (!$this->_needsEscape($url)) {
-			$Element = $Document->createElement($name, $url);
+			$element = $document->createElement($name, $url);
 		} else {
-			$Element = $Document->createElement($name);
-			$Element->appendChild($Document->createCDATASection($url));
+			$element = $document->createElement($name);
+			$element->appendChild($document->createCDATASection($url));
 		}
-		return $Element;
+		return $element;
 	}
 
 	/**
