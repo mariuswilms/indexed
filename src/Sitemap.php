@@ -215,14 +215,7 @@ class Sitemap {
 			if ($item['title']) {
 				$Page->appendChild($Document->createComment($item['title']));
 			}
-
-			if (!$this->_needsEscape($item['url'])) {
-				$Element = $Document->createElement('loc', $item['url']);
-			} else {
-				$Element = $Document->createElement('loc');
-				$Element->appendChild($Document->createCDATASection($item['url']));
-			}
-			$Page->appendChild($Element);
+			$Page->appendChild($this->_safeLocElement($item['url'], $Document));
 
 			if ($item['modified']) {
 				$Page->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
@@ -241,13 +234,7 @@ class Sitemap {
 				foreach ($item['images'] as $image) {
 					$Image = $Document->createElement('image:image');
 
-					if (!$this->_needsEscape($image['url'])) {
-						$Element = $Document->createElement('image:loc', $image['url']);
-					} else {
-						$Element = $Document->createElement('image:loc');
-						$Element->appendChild($Document->createCDATASection($image['url']));
-					}
-					$Image->appendChild($Element);
+					$Image->appendChild($this->_safeLocElement($image['url'], $Document, 'image'));
 
 					if ($image['caption']) {
 						$Image->appendChild($Document->createElement('image:caption', $image['caption']));
@@ -303,14 +290,7 @@ class Sitemap {
 			if ($item['title']) {
 				$Map->appendChild($Document->createComment($item['title']));
 			}
-
-			if (!$this->_needsEscape($item['url'])) {
-				$Element = $Document->createElement('loc', $item['url']);
-			} else {
-				$Element = $Document->createElement('loc');
-				$Element->appendChild($Document->createCDATASection($item['url']));
-			}
-			$Map->appendChild($Element);
+			$Map->appendChild($this->_safeLocElement($item['url'], $Document));
 
 			if ($item['modified']) {
 				$Map->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
@@ -341,6 +321,26 @@ class Sitemap {
 			}
 		}
 		return $extensions;
+	}
+
+	/**
+	 * Returns a `loc` element with the URL wrapped - if needed - in a CDATA section.
+	 *
+	 * @param string $url
+	 * @param object $Document
+	 * @param string $namespace Optional namespace.
+	 * @return object
+	 */
+	protected function _safeLocElement($url, $Document, $namespace = null) {
+		$name = $namespace ? "{$namespace}:loc" : 'loc';
+
+		if (!$this->_needsEscape($url)) {
+			$Element = $Document->createElement($name, $url);
+		} else {
+			$Element = $Document->createElement($name);
+			$Element->appendChild($Document->createCDATASection($url));
+		}
+		return $Element;
 	}
 
 	/**
