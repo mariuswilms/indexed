@@ -58,12 +58,12 @@ use indexed\RobotsTxt;
 $robotsTxt = new RobotsTxt();
 
 // The following directives apply to all agents.
-$robotsTxt->deny('/admin');
+$robotsTxt->disallow('/admin');
 $robotsTxt->requestRate(20);
 $robotsTxt->sitemap('http://example.org/sitemap.xml');
 
 // Disallow crawling of the entire site just for Google's AdsBot.
-$robotsTxt->deny('/', 'AdsBot-Google');
+$robotsTxt->disallow('/', 'AdsBot-Google');
 
 $txt = $robotsTxt->generate();
 

@@ -47,12 +47,12 @@ class RobotsTxt {
 	}
 
 	/**
-	 * Deny access to a URL.
+	 * Disallow access to a URL.
 	 *
 	 * @param string $url A relative URL.
 	 * @paran string $agent Optionally an identifier of agent; defaults to any.
 	 */
-	public function deny($url, $agent = '*') {
+	public function disallow($url, $agent = '*') {
 		if (strpos($url, '://') !== false) {
 			throw new Exception('URL must be relative.');
 		}
@@ -165,6 +165,18 @@ class RobotsTxt {
 		}
 		krsort($sorted);
 		return $sorted;
+	}
+
+	/**
+	 * Deny access to a URL.
+	 *
+	 * @param string $url A relative URL.
+	 * @paran string $agent Optionally an identifier of agent; defaults to any.
+	 * @deprecated
+	 */
+	public function deny($url, $agent = '*') {
+		trigger_error('RobotsTxt::deny() is deprecated, use disallow instead.', E_USER_DEPRECATED);
+		return $this->disallow($url, $agent);
 	}
 }
 

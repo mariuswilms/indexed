@@ -28,9 +28,9 @@ class RobotsTxtTest extends \PHPUnit_Framework_TestCase {
 		$this->subject->allow('http://posts/add');
 	}
 
-	public function testDenyThrowsExceptioOnAbsoluteUrls() {
+	public function testDisallowThrowsExceptioOnAbsoluteUrls() {
 		$this->setExpectedException('Exception');
-		$this->subject->deny('http://posts/add');
+		$this->subject->disallow('http://posts/add');
 	}
 
 	public function testSitemapThrowsExceptioOnRelativeUrls() {
@@ -39,9 +39,9 @@ class RobotsTxtTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testWildcards() {
-		$this->subject->deny('/*q=');
-		$this->subject->deny('/*.atom');
-		$this->subject->deny('/*/raw/');
+		$this->subject->disallow('/*q=');
+		$this->subject->disallow('/*.atom');
+		$this->subject->disallow('/*/raw/');
 
 		$result = $this->subject->generate();
 		$expected = <<<TXT
@@ -54,9 +54,9 @@ TXT;
 		$this->assertEquals($expected, $result);
 	}
 
-	public function testAllowDenyOrder() {
+	public function testAllowDisallowOrder() {
 		$this->subject->allow('/css/');
-		$this->subject->deny('/secret/');
+		$this->subject->disallow('/secret/');
 		$this->subject->allow('/img/');
 
 		$result = $this->subject->generate();
