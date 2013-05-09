@@ -20,7 +20,6 @@ Features
 Usage
 -----
 Generating content suited for a XML sitemap:
-```
 <?php
 
 use indexed\Sitemap;
@@ -47,10 +46,8 @@ $xml = $sitemap->generate('xml');
 // Now you can echo or save the contents of $xml.
 
 ?>
-```
 
 Control all the lovely robots:
-```
 <?php
 
 use indexed\RobotsTxt;
@@ -70,7 +67,6 @@ $txt = $robotsTxt->generate();
 // Now you can echo or save the contents of $txt.
 
 ?>
-```
 
 Copyright & License
 -------------------
