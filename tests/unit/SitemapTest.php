@@ -65,26 +65,6 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($result);
 	}
 
-	public function testSitemapTxt() {
-		$this->subject->page('/posts-abcdef', array(
-			'title' => 'post index'
-		));
-		$this->subject->page('/posts-abcdef/add', array(
-			'title' => 'post add',
-			'modified' => 'monthly',
-			'priority' => 0.4,
-			'section' => 'the section'
-		));
-
-		$result = $this->subject->generate('txt');
-		$expected = <<<TXT
-http://example.org/posts-abcdef
-http://example.org/posts-abcdef/add
-
-TXT;
-		$this->assertEquals($expected, $result);
-	}
-
 	public function testAddingImagesToPage() {
 		if (!$this->_online) {
 			$this->markTestSkipped('Not connected to the internet.');
