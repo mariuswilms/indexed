@@ -13,61 +13,19 @@ namespace indexed;
 use Exception;
 use DomDocument;
 
-class Sitemap {
-
-	/**
-	 * Maximum number of pages allowed to be contained.
-	 */
-	const MAX_PAGES = 50000;
-
-	/**
-	 * Maximum size in bytes allowed.
-	 */
-	const MAX_SIZE = 10485760;
+class Sitemap extends Site {
 
 	/**
 	 * Maximum number of images per page.
 	 */
 	const MAX_IMAGES_PER_PAGE = 1000;
 
-	/**
-	 * Enable/disable debug mode.
-	 *
-	 * @var boolean
-	 */
-	public $debug = false;
-
-	/**
-	 * Holds page items of the sitemap added via the `Sitemap::page()`.
-	 *
-	 * @var array
-	 */
-	protected $_data = array();
-
-	/**
-	 * Base (i.e. 'http://example.org') used to fully qualify URLs.
-	 *
-	 * @var string
-	 */
-	protected $_base;
-
-	/**
-	 * Namespace definitions used when generating XML sitemaps.
-	 *
-	 * @var array
-	 */
 	protected static $_namespaces = array(
 		'core' => array(
 			'prefix' => null,
 			'version' => '0.9',
 			'uri' => 'http://www.sitemaps.org/schemas/sitemap/{:version}',
 			'schema' => 'http://www.sitemaps.org/schemas/sitemap/{:version}/sitemap.xsd'
-		),
-		'index' => array(
-			'prefix' => null,
-			'version' => '0.9',
-			'uri' => 'http://www.sitemaps.org/schemas/sitemap/{:version}',
-			'schema' => 'http://www.sitemaps.org/schemas/sitemap/{:version}/site{:name}.xsd'
 		),
 		'image' => array(
 			'prefix' => 'image',
@@ -78,28 +36,9 @@ class Sitemap {
 	);
 
 	/**
-	 * Constructor.
-	 *
-	 * @param string $base The base to fully qualify URLs.
-	 */
-	public function __construct($base) {
-		$this->_base = $base;
-
-		foreach (static::$_namespaces as $name => &$namespace) {
-			foreach (array('uri', 'schema') as $field) {
-				$namespace[$field] = strtr($namespace[$field], array(
-					'{:name}' => $name,
-					'{:version}' => $namespace['version'],
-					'{:prefix}' => $namespace['prefix']
-				));
-			}
-		}
-	}
-
-	/**
 	 * Adds a page to the sitemap.
 	 *
-	 * @param string $url An absolute URL for the item to be added.
+	 * @param string $url An absolute or fully qualified URL for the item to be added.
 	 * @param array $options Additional options for the item:
 	 *                       - modified
 	 *                       - changes
@@ -110,7 +49,7 @@ class Sitemap {
 	 *                         Possible values are 0.0 - 1.0 (most important).
 	 *                         0.5 is considered the default.
 	 *                       - title
-	 *                         For XML used as a comment.
+	 *                         Used as a comment.
 	 */
 	public function page($url, $options = array()) {
 		$defaults = array(
@@ -133,8 +72,8 @@ class Sitemap {
 	 * Adds an image to the sitemap.
 	 *
 	 * @link http://www.google.com/support/webmasters/bin/answer.py?answer=178636
-	 * @param string $url An absolute URL for the image.
-	 * @param string $page An absolute URL for the page which contains the image.
+	 * @param string $url An absolute or fully qualified URL for the image.
+	 * @param string $page An absolute or fully qualified URL for the page which contains the image.
 	 * $param array $options Available options are:
 	 *                       - title
 	 *                         The title of the image.
@@ -167,21 +106,34 @@ class Sitemap {
 		$this->_data[$page]['images'][$url] = compact('url') + $options + $defaults;
 	}
 
-	/**
-	 * Generates the sitemap in given format.
-	 *
-	 * @param string $format Either 'xml', 'indeXml' or 'txt' (deprecated).
-	 * @return string The sitemap in given format.
-	 */
-	public function generate($format = 'xml') {
-		if (!method_exists($this, '_generate' . ucfirst($format))) {
+	public function generate() {
+		if (count($this->_data) > static::MAX_ITEMS) {
+			throw new Exception('Too many items.');
+		}
+		$args = func_get_args();
+
+		if (!$args || $args[0] == 'xml') {
+			$result = $this->_generate();
+		} elseif ($args[0] == 'indexXml') {
+			$message  = 'Support for `indexXml` format has been deprecated.';
+			$message .= ' Please use the dedicated Siteindex class instead.';
+			trigger_error($message, E_USER_DEPRECATED);
+
+			$index = new Siteindex($this->_base);
+			$index->debug = $this->debug;
+
+			foreach ($this->_data as $item) {
+				$index->sitemap($item['url']);
+			}
+			return $index->generate();
+		} elseif ($args[0] == 'txt') {
+			$message = 'Format `txt` has been deprecated and will be removed soon.';
+			trigger_error($message, E_USER_DEPRECATED);
+
+			$result = $this->_generateTxt();
+		} else {
 			throw new Exception('Invalid format given.');
 		}
-		if (count($this->_data) > static::MAX_PAGES) {
-			throw new Exception('Too many pages.');
-		}
-
-		$result = $this->{'_generate' . ucfirst($format)}();
 
 		if (strlen($result) > static::MAX_SIZE) {
 			throw new Exception('Result document exceeds allowed size.');
@@ -189,7 +141,7 @@ class Sitemap {
 		return $result;
 	}
 
-	protected function _generateXml() {
+	protected function _generate() {
 		$Document = new DomDocument('1.0', 'UTF-8');
 
 		$namespaces = static::$_namespaces;
@@ -260,97 +212,9 @@ class Sitemap {
 		return $Document->saveXml();
 	}
 
-	// @link http://support.google.com/webmasters/bin/answer.py?hl=en&answer=75712
-	protected function _generateIndexXml() {
-		$Document = new DomDocument('1.0', 'UTF-8');
-		$namespaces = static::$_namespaces;
-
-		$Set = $Document->createElementNs(
-			$namespaces['index']['uri'], 'sitemapindex'
-		);
-		$Set->setAttributeNs(
-			'http://www.w3.org/2001/XMLSchema-instance',
-			'xsi:schemaLocation',
-			"{$namespaces['index']['uri']} {$namespaces['index']['schema']}"
-		);
-
-		foreach ($this->_data as $item) {
-			$Map = $Document->createElement('sitemap');
-
-			if ($item['title']) {
-				$Map->appendChild($Document->createComment($item['title']));
-			}
-			$Map->appendChild($this->_safeLocElement($item['url'], $Document));
-
-			if ($item['modified']) {
-				$Map->appendChild($Document->createElement('lastmod', date('c', strtotime($item['modified']))));
-			}
-			$Set->appendChild($Map);
-		}
-		$Document->appendChild($Set);
-
-		$Document->formatOutput = $this->debug;
-		return $Document->saveXml();
-	}
-
-	protected function _uses($data) {
-		$names = $extensions = array();
-
-		foreach (static::$_namespaces as $name => $namespace) {
-			if (!$namespace['prefix']) { // Not an extension.
-				continue;
-			}
-			$names[$name] = $name . 's'; // Poor mans pluralize.
-		}
-		foreach ($data as $item) {
-			foreach ($names as $name => $pluralName) {
-				if (!empty($item[$name]) || !empty($item[$pluralName])) {
-					$extensions[] = $name;
-					unset($names[$name]);
-				}
-			}
-		}
-		return $extensions;
-	}
-
-	/**
-	 * Returns a `loc` element with the URL wrapped - if needed - in a CDATA section.
-	 *
-	 * @param string $url
-	 * @param object $Document
-	 * @param string $namespace Optional namespace.
-	 * @return object
-	 */
-	protected function _safeLocElement($url, $Document, $namespace = null) {
-		$name = $namespace ? "{$namespace}:loc" : 'loc';
-
-		if (!$this->_needsEscape($url)) {
-			$Element = $Document->createElement($name, $url);
-		} else {
-			$Element = $Document->createElement($name);
-			$Element->appendChild($Document->createCDATASection($url));
-		}
-		return $Element;
-	}
-
-	/**
-	 * Helper function to check if a string (in this case an URL) needs to be
-	 * wrapped in a CDATA section.
-	 *
-	 * @param string $string
-	 * @return boolean
-	 */
-	protected function _needsEscape($string) {
-		return strpos($string, '&') !== false && strpos($string, '&amp;') === false;
-	}
-
 	// @link http://www.sitemaps.org/protocol.php#otherformats
 	// @deprecated
 	protected function _generateTxt() {
-		if ($format == 'txt') {
-			$message = 'Format `txt` has been deprecated and will be removed soon.';
-			trigger_error($message, E_USER_DEPRECATED);
-		}
 		$result = null;
 
 		foreach ($this->_data as $item) {

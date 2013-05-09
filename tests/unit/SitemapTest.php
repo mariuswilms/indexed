@@ -25,26 +25,7 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 		$this->_online = (boolean) @fsockopen('google.com', 80);
 	}
 
-	public function testSiteindexXml() {
-		if (!$this->_online) {
-			$this->markTestSkipped('Not connected to the internet.');
-		}
-
-		$this->subject->page('/site-a/map.xml', array(
-			'title' => 'a map'
-		));
-		$this->subject->page('/site-b/map.xml', array(
-			'title' => 'b map'
-		));
-
-		$Document = new DomDocument();
-		$Document->loadXml($this->subject->generate('indexXml'));
-		$result = $Document->schemaValidate('http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd');
-
-		$this->assertTrue($result);
-	}
-
-	public function testSitemapXml() {
+	public function testGenerateBasic() {
 		if (!$this->_online) {
 			$this->markTestSkipped('Not connected to the internet.');
 		}
