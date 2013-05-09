@@ -41,7 +41,7 @@ class RobotsTxt {
 	 */
 	public function allow($url, $agent = '*') {
 		if (strpos($url, '://') !== false) {
-			throw new Exception('URL must be relative.');
+			throw new Exception('Allow-URL must be relative.');
 		}
 		$this->_data[$agent]['Allow'][] = $url;
 	}
@@ -54,7 +54,7 @@ class RobotsTxt {
 	 */
 	public function disallow($url, $agent = '*') {
 		if (strpos($url, '://') !== false) {
-			throw new Exception('URL must be relative.');
+			throw new Exception('Disallow-URL must be relative.');
 		}
 		$this->_data[$agent]['Disallow'][] = $url;
 	}
@@ -67,7 +67,7 @@ class RobotsTxt {
 	 */
 	public function sitemap($url, $agent = '*') {
 		if (strpos($url, '://') === false) {
-			throw new Exception('URL must be fully qualified.');
+			throw new Exception('Sitemap-URL must be fully qualified.');
 		}
 		$this->_data[$agent]['Sitemap'][] = $url;
 	}
