@@ -20,7 +20,7 @@ use Exception;
  */
 class Robots {
 
-	protected static $_directivesOrder = array(
+	protected static $_directivesOrder = [
 		'User-agent',    // 1.0
 		'Allow',         // 2.0
 		'Disallow',      // 1.0
@@ -29,9 +29,9 @@ class Robots {
 		'Visit-time',    // 2.0
 		'Request-rate',  // 2.0
 		'Comment'        // 2.0
-	);
+	];
 
-	protected $_data = array();
+	protected $_data = [];
 
 	/**
 	 * Allow access to a URL.
@@ -154,7 +154,7 @@ class Robots {
 	}
 
 	protected function _sort($data) {
-		$sorted = array();
+		$sorted = [];
 
 		foreach ($data as $agent => $ruleSet) {
 			foreach (static::$_directivesOrder as $directive) {

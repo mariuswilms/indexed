@@ -21,14 +21,14 @@ use DomDocument;
  */
 class Siteindex extends Site {
 
-	protected static $_namespaces = array(
-		'index' => array(
+	protected static $_namespaces = [
+		'index' => [
 			'prefix' => null,
 			'version' => '0.9',
 			'uri' => 'http://www.sitemaps.org/schemas/sitemap/{:version}',
 			'schema' => 'http://www.sitemaps.org/schemas/sitemap/{:version}/site{:name}.xsd'
-		)
-	);
+		]
+	];
 
 	/**
 	 * Adds a sitemap to the siteindex.
@@ -39,11 +39,11 @@ class Siteindex extends Site {
 	 *                       - title
 	 *                         Used as a comment.
 	 */
-	public function sitemap($url, array $options = array()) {
-		$defaults = array(
+	public function sitemap($url, array $options = []) {
+		$defaults = [
 			'modified' => null,
 			'title' => null
-		);
+		];
 		if (strpos($url, '://') === false) {
 			$url = $this->_base . $url;
 		}

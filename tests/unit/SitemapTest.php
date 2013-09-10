@@ -30,15 +30,15 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 			$this->markTestSkipped('Not connected to the internet.');
 		}
 
-		$this->subject->page('/posts-abcdef', array(
+		$this->subject->page('/posts-abcdef', [
 			'title' => 'post index'
-		));
-		$this->subject->page('/posts-abcdef/page', array(
+		]);
+		$this->subject->page('/posts-abcdef/page', [
 			'title' => 'post add',
 			'modified' => 'monthly',
 			'priority' => 0.4,
 			'section' => 'the section'
-		));
+		]);
 		$Document = new DomDocument();
 		$Document->loadXml($this->subject->generate('xml'));
 		$result = $Document->schemaValidate('http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
@@ -51,12 +51,12 @@ class SitemapTest extends \PHPUnit_Framework_TestCase {
 			$this->markTestSkipped('Not connected to the internet.');
 		}
 
-		$this->subject->page('/posts-abcdef', array(
+		$this->subject->page('/posts-abcdef', [
 			'title' => 'post index'
-		));
-		$this->subject->image('/img/kat.png', '/posts-abcdef', array(
+		]);
+		$this->subject->image('/img/kat.png', '/posts-abcdef', [
 			'title' => 'The title'
-		));
+		]);
 		$Document = new DomDocument();
 		$output = $this->subject->generate('xml');
 		$Document->loadXml($output);

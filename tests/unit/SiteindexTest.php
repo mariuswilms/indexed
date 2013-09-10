@@ -30,12 +30,12 @@ class SiteindexTest extends \PHPUnit_Framework_TestCase {
 			$this->markTestSkipped('Not connected to the internet.');
 		}
 
-		$this->subject->sitemap('/site-a/map.xml', array(
+		$this->subject->sitemap('/site-a/map.xml', [
 			'title' => 'a map'
-		));
-		$this->subject->sitemap('/site-b/map.xml', array(
+		]);
+		$this->subject->sitemap('/site-b/map.xml', [
 			'title' => 'b map'
-		));
+		]);
 
 		$Document = new DomDocument();
 		$Document->loadXml($this->subject->generate());

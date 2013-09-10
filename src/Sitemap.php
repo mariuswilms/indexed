@@ -20,20 +20,20 @@ class Sitemap extends Site {
 	 */
 	const MAX_IMAGES_PER_PAGE = 1000;
 
-	protected static $_namespaces = array(
-		'core' => array(
+	protected static $_namespaces = [
+		'core' => [
 			'prefix' => null,
 			'version' => '0.9',
 			'uri' => 'http://www.sitemaps.org/schemas/sitemap/{:version}',
 			'schema' => 'http://www.sitemaps.org/schemas/sitemap/{:version}/sitemap.xsd'
-		),
-		'image' => array(
+		],
+		'image' => [
 			'prefix' => 'image',
 			'version' => '1.1',
 			'uri' => 'http://www.google.com/schemas/sitemap-{:prefix}/{:version}',
 			'schema' => 'http://www.google.com/schemas/sitemap-{:prefix}/{:version}/sitemap-{:prefix}.xsd'
-		)
-	);
+		]
+	];
 
 	/**
 	 * Adds a page to the sitemap.
@@ -51,14 +51,14 @@ class Sitemap extends Site {
 	 *                       - title
 	 *                         Used as a comment.
 	 */
-	public function page($url, $options = array()) {
-		$defaults = array(
+	public function page($url, $options = []) {
+		$defaults = [
 			'modified' => null,
 			'changes' => null,
 			'priority' => null,
 			'title' => null,
-			'images' => array()
-		);
+			'images' => []
+		];
 		if (strpos($url, '://') === false) {
 			$url = $this->_base . $url;
 		}
@@ -84,19 +84,19 @@ class Sitemap extends Site {
 	 *                       - location
 	 *                         The geographic location of the image (i.e. Limerick, Ireland).
 	 */
-	public function image($url, $page, array $options = array()) {
+	public function image($url, $page, array $options = []) {
 		if (strpos($url, '://') === false) {
 			$url = $this->_base . $url;
 		}
 		if (strpos($page, '://') === false) {
 			$page = $this->_base . $page;
 		}
-		$defaults = array(
+		$defaults = [
 			'title' => null,
 			'license' => null,
 			'caption' => null,
 			'location' => null
-		);
+		];
 		if (isset($this->_data[$page]['images'][$url])) {
 			throw new Exception("Will not overwrite image with URL `{$url}`; already added.");
 		}

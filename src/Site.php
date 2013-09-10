@@ -34,7 +34,7 @@ abstract class Site {
 	 *
 	 * @var array
 	 */
-	protected $_data = array();
+	protected $_data = [];
 
 	/**
 	 * Base (i.e. 'http://example.org') used to fully qualify URLs.
@@ -48,7 +48,7 @@ abstract class Site {
 	 *
 	 * @var array
 	 */
-	protected static $_namespaces = array();
+	protected static $_namespaces = [];
 
 	/**
 	 * Constructor. Parses and loads the namespaces, sets base URL.
@@ -59,12 +59,12 @@ abstract class Site {
 		$this->_base = $base;
 
 		foreach (static::$_namespaces as $name => &$namespace) {
-			foreach (array('uri', 'schema') as $field) {
-				$namespace[$field] = strtr($namespace[$field], array(
+			foreach (['uri', 'schema'] as $field) {
+				$namespace[$field] = strtr($namespace[$field], [
 					'{:name}' => $name,
 					'{:version}' => $namespace['version'],
 					'{:prefix}' => $namespace['prefix']
-				));
+				]);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ abstract class Site {
 	abstract protected function _generate();
 
 	protected function _uses($data) {
-		$names = $extensions = array();
+		$names = $extensions = [];
 
 		foreach (static::$_namespaces as $name => $namespace) {
 			if (!$namespace['prefix']) { // Not an extension.

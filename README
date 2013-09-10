@@ -27,19 +27,19 @@ use indexed\Sitemap;
 // All URLs a relative to the base given here.
 $sitemap = new Sitemap('http://example.org');
 
-$sitemap->page('/', array(
+$sitemap->page('/', [
     'changes' => 'daily',
     'priority' => '1.0'
-));
+]);
 
 // Just the URL parameter is actually required.
 $sitemap->page('/post/know-the-cat');
 
 // Images are also supported and can be added to existing pages.
-$sitemap->image('/img/kittykat.png', '/post/know-the-cat', array(
+$sitemap->image('/img/kittykat.png', '/post/know-the-cat', [
     'title' => 'My favorite Cat',
     'location' => 'Hamburg, Germany'
-));
+]);
 
 $xml = $sitemap->generate();
 
@@ -98,7 +98,7 @@ time when a significant point of development has been reached.
 Snapshots are schemed as follows:
 [current year, two digit].[index, zero based]
 
-PHP >=5.3.0 is required to run the code.
+PHP >=5.4.0 is required to run the code.
 
 Installation
 ------------
