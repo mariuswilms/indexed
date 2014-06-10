@@ -81,9 +81,9 @@ $txt = $robots->generate();
 
 Copyright & License
 -------------------
-Indexed is Copyright (c) 2013 David Persson if not otherwise stated. The
-code is distributed under the terms of the BSD 3-clause License. For the
-full license text see the LICENSE file.
+Indexed is Copyright (c) 2013-2014 David Persson if not otherwise stated.
+The code is distributed under the terms of the BSD 3-clause License. For
+the full license text see the LICENSE file.
 
 Installation
 ------------
