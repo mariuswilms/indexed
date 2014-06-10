@@ -1,0 +1,15 @@
+{
+    "name": "davidpersson/indexed",
+    "description": "Increase and control index-ability of your site; PHP library for generating sitemaps and controlling all the robots.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Persson",
+            "email": "davidpersson@gmx.de"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+      "sebastianbergmann/phpunit": "4.*.*"
+    }
+}
