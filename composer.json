@@ -14,7 +14,7 @@
       "ext-dom": "*"
     },
     "require-dev": {
-      "sebastianbergmann/phpunit": "4.*"
+      "phpunit/phpunit": "4.*"
     },
     "autoload": {
       "psr-4": {"indexed\\": "src/"}
