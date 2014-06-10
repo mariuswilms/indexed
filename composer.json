@@ -1,7 +1,7 @@
 {
     "name": "davidpersson/indexed",
     "description": "Increase and control index-ability of your site; PHP library for generating sitemaps and controlling all the robots.",
-    "license": "MIT",
+    "license": "BSD-3-clause",
     "authors": [
         {
             "name": "David Persson",
