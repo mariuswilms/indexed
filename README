@@ -85,37 +85,12 @@ Indexed is Copyright (c) 2013 David Persson if not otherwise stated. The
 code is distributed under the terms of the BSD 3-clause License. For the
 full license text see the LICENSE file.
 
-Versions & Requirements
------------------------
-Indexed follows the rolling release development model. Code in the master
-branch should always considered to be stable. While code in the dev branch
-should be considered unstable or sometimes even expiremental.
-
-There are no versions as in the standard release development model but
-snapshots. The master branch may be tagged ("snapshotted") at any point in
-time when a significant point of development has been reached.
-
-Snapshots are schemed as follows:
-[current year, two digit].[index, zero based]
-
-PHP >=5.4.0 is required to run the code.
-
 Installation
 ------------
-Clone the repository or extract a downloaded archive, then move
-or copy the resulting directory into /path/to/your/libraries/.
+The preferred installation method is via composer. You can add the library
+as a dependency via:
 
-Bootstrap the library by including the `bootstrap.php` file. This will execute
-all necessary steps (i.e. register an autoloader), so you can start using the
-classes. If you like to have more control over what is configured how, consider
-the documented bootstrap file as blueprint for your own setup code.
-<?php
-// ...
-
-require '/path/to/library/bootstrap.php';
-
-// ...
-?>
+$ composer require davidpersson/indexed
 
 Running the Tests
 -----------------
