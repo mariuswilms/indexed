@@ -8,6 +8,7 @@
             "email": "davidpersson@gmx.de"
         }
     ],
+    "keywords": ["robots.txt", "sitemap", "siteindex", "indexing"],
     "require": {
       "php": ">=5.4.0",
       "ext-dom": "*"
