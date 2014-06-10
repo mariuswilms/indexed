@@ -8,7 +8,10 @@
             "email": "davidpersson@gmx.de"
         }
     ],
-    "require": {},
+    "require": {
+      "php": ">=5.4.0",
+      "ext-dom": "*"
+    },
     "require-dev": {
       "sebastianbergmann/phpunit": "4.*.*"
     },
