@@ -10,7 +10,7 @@ license that can be found in the LICENSE file.
 <phpunit 
 	backupGlobals="false"
 	backupStaticAttributes="false"
-	bootstrap="bootstrap.php"
+	bootstrap="vendor/autoload.php"
 >
 	<testsuites>
 		<testsuite name="Library">
